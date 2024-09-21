@@ -1,8 +1,10 @@
 from flask import Flask, render_template
 from flask_socketio import SocketIO
+from flask_cors import CORS
 
 app = Flask(__name__)
-socketio = SocketIO(app)
+CORS(app)  # Enable CORS
+socketio = SocketIO(app, cors_allowed_origins="*")  # Allow all origins for SocketIO
 
 @app.route('/')
 def index():
@@ -15,6 +17,4 @@ def handle_control(data):
     socketio.emit('command_received', {'status': 'Command processed'})
 
 if __name__ == '__main__':
-    print("hi")
-    
     socketio.run(app, host='0.0.0.0', port=5000)
