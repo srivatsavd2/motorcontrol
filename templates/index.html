@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rover Control</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f4f4f4;
+            height: 100vh;
+            justify-content: center;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        #controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .button {
+            padding: 15px 30px;
+            margin: 10px;
+            font-size: 20px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            background-color: #007bff;
+            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
+            transition: background-color 0.3s, transform 0.1s;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .button:active {
+            transform: scale(0.95);
+        }
+        .direction-buttons {
+            display: flex;
+            justify-content: center;
+        }
+        .spacer {
+            height: 10px; /* Space between buttons */
+        }
+    </style>
+</head>
+<body>
+    <h1>Rover Control</h1>
+    <div id="controls">
+        <button class="button" onmousedown="startCommand('forward')" onmouseup="stopCommand()">Forward</button>
+        <div class="direction-buttons">
+            <button class="button" onmousedown="startCommand('left')" onmouseup="stopCommand()">Left</button>
+            <button class="button" onmousedown="startCommand('stop')" onmouseup="stopCommand()">Stop</button>
+            <button class="button" onmousedown="startCommand('right')" onmouseup="stopCommand()">Right</button>
+        </div>
+        <button class="button" onmousedown="startCommand('backward')" onmouseup="stopCommand()">Back</button>
+    </div>
+
+    <script>
+        const socket = io();
+        let commandInterval;
+
+        function startCommand(direction) {
+            socket.emit('control', { direction });
+
+            // Start sending command at intervals
+            commandInterval = setInterval(() => {
+                socket.emit('control', { direction });
+            }, 100); // Send command every 100ms (adjust as needed)
+        }
+
+        function stopCommand() {
+            clearInterval(commandInterval);
+            socket.emit('control', { direction: 'stop' }); // Optionally send stop command when released
+        }
+    </script>
+</body>
+</html>
